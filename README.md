@@ -59,3 +59,8 @@ O cupom será pré-preenchido automaticamente, permitindo que o P2P ajude seus a
 ## Licença
 
 Este projeto é desenvolvido sob a **Licença GPL v3**. Caso você use este código e faça melhorias, por favor, publique essas melhorias para que a comunidade possa se beneficiar.
+
+## Doacao
+
+Se quiser me pagar um cafe pelos dias q eu passe brincando com esse projeto meu endereco ln é sandmann@walletofsatoshi.com
+

@@ -1,0 +1,297 @@
+/* css/style.css */
+
+/******************************************************************************/ 
+/*                              RESET BÁSICO                                  */ 
+/******************************************************************************/ 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/******************************************************************************/ 
+/*                               ESTILO GERAL                                 */ 
+/******************************************************************************/ 
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
+/******************************************************************************/ 
+/*                             MODO CELULAR                                   */ 
+/******************************************************************************/ 
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Espaçamento entre o cabeçalho e o menu */
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem; /* Espaçamento adicional */
+  }
+  
+  nav ul li {
+    margin-bottom: 1rem;
+  }
+}
+
+
+
+
+/******************************************************************************/ 
+/*                           CABEÇALHO (HEADER)                               */ 
+/******************************************************************************/ 
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #000;
+  border-bottom: 1px solid #444;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 50px;
+  margin-right: 1rem;
+}
+
+/******************************************************************************/ 
+/*                               NAVEGAÇÃO                                    */ 
+/******************************************************************************/ 
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+nav a:hover,
+nav a.active {
+  color: #f00;
+}
+
+/******************************************************************************/ 
+/*                           CONTAINER PRINCIPAL                              */ 
+/******************************************************************************/ 
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+}
+
+/******************************************************************************/ 
+/*                             FORMULÁRIO                                     */ 
+/******************************************************************************/ 
+form {
+  background-color: rgba(255,255,255,0.1);
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #111;
+  color: #fff;
+}
+
+/* Popup de erro para valor abaixo do mínimo */
+#valorError {
+  color: #f00;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  display: none;
+}
+
+/* Radio buttons para Tipo de Compra */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+/* Ícones para Rede de Recebimento */
+.icon-radio-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.icon-radio-group label {
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.icon-radio-group input[type="radio"] {
+  display: none;
+}
+
+.icon-radio-group img {
+  width: 50px;
+  height: 50px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  transition: border 0.3s;
+  display: block;
+  margin: 0 auto;
+}
+
+.icon-radio-group span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.icon-radio-group input[type="radio"]:checked + img {
+  border: 2px solid #f00;
+}
+
+.icon-radio-group input[type="radio"]:disabled + img {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #f00;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #ff3333;
+}
+
+/* Aba de Cupom */
+.cupom-group {
+  background-color: rgba(255,255,255,0.05);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.cupom-group p {
+  font-style: italic;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+/* Cotação e valor aproximado */
+#cotacao,
+#satsInfo {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/******************************************************************************/ 
+/*                             CONTEÚDO SOBRE                                  */ 
+/******************************************************************************/ 
+.content {
+  background-color: rgba(255,255,255,0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 0 auto 2rem auto;
+  text-align: left;
+}
+
+.content h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.content p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/******************************************************************************/ 
+/*                        CARTÕES DE TAXAS (Taxas.html)                       */ 
+/******************************************************************************/ 
+.card {
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0 auto 20px;
+  max-width: 700px;
+  text-align: center;
+}
+
+.card h2 {
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.card li {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.card p {
+  white-space: pre-wrap;
+  text-align: center;
+  margin: 0;
+  color: #ccc;
+}

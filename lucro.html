@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Lucro P2P - Sandmann</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Base de estilo e centralização */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: #000;
+      border-bottom: 1px solid #444;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    .logo img {
+      height: 50px;
+      margin-right: 1rem;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+    nav a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    nav a:hover,
+    nav a.active {
+      color: #f00;
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    /* Cartão da calculadora */
+    .card {
+      background-color: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0 auto 20px auto;
+      max-width: 700px;
+      text-align: left;
+    }
+    .card h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background-color: #111;
+      color: #fff;
+    }
+    button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #f00;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: block;
+      margin: 1rem auto;
+    }
+    button:hover {
+      background-color: #ff3333;
+    }
+    .result {
+      margin-top: 1rem;
+      background-color: rgba(255,255,255,0.05);
+      padding: 1rem;
+      border-radius: 4px;
+      text-align: left;
+    }
+    .result p {
+      margin: 0.5rem 0;
+    }
+    #cotacaoAtual {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    /* Seção para escolher a cotação */
+    .cotacao-group {
+      margin: 1rem 0;
+      text-align: center;
+    }
+    .cotacao-group label {
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+    #cotacaoManualDiv {
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img id="mainLogo" src="aa/logo.png" alt="Logo">
+      <span id="siteName">Minha Página</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="calculadora.html" class="active">Calculadora de Lucro</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <!-- Conteúdo Principal -->
+  <div class="container">
+    <h1>Calculadora de Lucro P2P</h1>
+    <div class="card">
+      <h2>Simule e Confira Seu Lucro</h2>
+      <!-- Seção de Cotação -->
+      <div class="cotacao-group">
+        <label>
+          <input type="radio" name="cotacaoTipo" value="automatica" checked onchange="toggleCotacaoTipo()"> 
+          Cotação SideSwap (Automática)
+        </label>
+        <label>
+          <input type="radio" name="cotacaoTipo" value="manual" onchange="toggleCotacaoTipo()"> 
+          Cotação Manual
+        </label>
+      </div>
+      <div id="cotacaoAutomatica">
+        <p id="cotacaoAtual">Cotação Atual: Carregando...</p>
+      </div>
+      <div id="cotacaoManualDiv" style="display: none;">
+        <input type="number" id="cotacaoManual" placeholder="Insira a cotação manual (R$)" step="0.01">
+      </div>
+      
+      <!-- Entradas para a calculadora -->
+      <div class="form-group">
+        <label for="compraInput">Compra Real (R$):</label>
+        <input type="number" id="compraInput" placeholder="Insira o valor em reais" step="0.01">
+      </div>
+      <div class="form-group">
+        <label for="lucroInput">Lucro Desejado (%):</label>
+        <input type="number" id="lucroInput" placeholder="Ex.: 2" step="0.1" value="2">
+      </div>
+      <button onclick="calcularLucro()">Calcular</button>
+      <div class="result" id="resultadoCalc"></div>
+    </div>
+  </div>
+  
+  <!-- Importa as configurações -->
+  <script src="aa/taxas_config.js"></script>
+  <script>
+    // Atualiza o nome do site no cabeçalho
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("siteName").textContent = CONFIG.contact.name;
+      atualizarCotacao();
+    });
+    
+    // Variável global para a cotação atual
+    let currentPrice = null;
+    
+    // Função para obter a cotação via WebSocket da SideSwap
+    function getPrice() {
+      return new Promise((resolve, reject) => {
+        const ws = new WebSocket("wss://api.sideswap.io/json-rpc-ws");
+        ws.addEventListener('open', () => {
+          const payload = {
+            id: 1,
+            method: "subscribe_price_stream",
+            params: {
+              asset: "02f22f8d9c76ab41661a2729e4752e2c5d1a263012141b86ea98af5472df5189",
+              send_bitcoins: false
+            }
+          };
+          ws.send(JSON.stringify(payload));
+        });
+        ws.addEventListener('message', (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            const price = data?.result?.price;
+            ws.close();
+            if (price) {
+              resolve(parseFloat(price));
+            } else {
+              resolve(null);
+            }
+          } catch (error) {
+            console.error("Erro ao processar mensagem do WebSocket:", error);
+            reject(error);
+          }
+        });
+        ws.addEventListener('error', (error) => {
+          console.error("Erro no WebSocket:", error);
+          reject(error);
+        });
+      });
+    }
+    
+    // Atualiza a cotação automática na página
+    function atualizarCotacao() {
+      const cotacaoEl = document.getElementById("cotacaoAtual");
+      cotacaoEl.innerText = "Cotação Atual: Carregando...";
+      getPrice().then(price => {
+        if (price !== null) {
+          currentPrice = price;
+          cotacaoEl.innerText = `Cotação Atual: R$ ${price.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        } else {
+          cotacaoEl.innerText = "Cotação Atual: Não disponível";
+        }
+      }).catch(error => {
+        cotacaoEl.innerText = "Cotação Atual: Erro";
+        console.error("Erro ao obter cotação:", error);
+      });
+    }
+    
+    // Alterna entre cotação automática e manual
+    function toggleCotacaoTipo() {
+      const tipoSelecionado = document.querySelector('input[name="cotacaoTipo"]:checked').value;
+      if (tipoSelecionado === "manual") {
+        document.getElementById("cotacaoAutomatica").style.display = "none";
+        document.getElementById("cotacaoManualDiv").style.display = "block";
+      } else {
+        document.getElementById("cotacaoAutomatica").style.display = "block";
+        document.getElementById("cotacaoManualDiv").style.display = "none";
+      }
+    }
+    
+    // Retorna a cotação a ser usada (manual ou automática)
+    function getCotacao() {
+      const tipoSelecionado = document.querySelector('input[name="cotacaoTipo"]:checked').value;
+      if (tipoSelecionado === "manual") {
+        const manualValue = parseFloat(document.getElementById("cotacaoManual").value);
+        return (!isNaN(manualValue) && manualValue > 0) ? manualValue : null;
+      } else {
+        return currentPrice;
+      }
+    }
+    
+    // Função para calcular o spread de forma orgânica com interpolação linear
+    function getSpread(valor) {
+      const tiers = [
+        { value: 100, spread: 3.06 },
+        { value: 150, spread: 2.05 },
+        { value: 200, spread: 1.53 },
+        { value: 300, spread: 1.02 },
+        { value: 400, spread: 0.77 },
+        { value: 500, spread: 0.61 },
+        { value: 600, spread: 0.47 },
+        { value: 700, spread: 0.44 },
+        { value: 800, spread: 0.38 },
+        { value: 900, spread: 0.34 },
+        { value: 1000, spread: 0.31 },
+        { value: 1200, spread: 0.26 },
+        { value: 1400, spread: 0.22 },
+        { value: 1600, spread: 0.20 },
+        { value: 1800, spread: 0.17 },
+        { value: 2000, spread: 0.15 },
+        { value: 2300, spread: 0.13 },
+        { value: 2600, spread: 0.12 },
+        { value: 3000, spread: 0.10 },
+        { value: 3400, spread: 0.09 },
+        { value: 3800, spread: 0.08 },
+        { value: 4200, spread: 0.07 },
+        { value: 4500, spread: 0.07 },
+        { value: 4900, spread: 0.06 },
+        { value: 5200, spread: 0.06 },
+        { value: 5500, spread: 0.06 },
+        { value: 6000, spread: 0.05 }
+      ];
+      
+      if (valor <= tiers[0].value) {
+        return tiers[0].spread;
+      }
+      
+      if (valor >= tiers[tiers.length - 1].value) {
+        return tiers[tiers.length - 1].spread;
+      }
+      
+      for (let i = 1; i < tiers.length; i++) {
+        if (valor <= tiers[i].value) {
+          const lower = tiers[i - 1];
+          const upper = tiers[i];
+          const spread = lower.spread + (upper.spread - lower.spread) * ((valor - lower.value) / (upper.value - lower.value));
+          return parseFloat(spread.toFixed(2));
+        }
+      }
+    }
+    
+    // Função para calcular a taxa P2P
+    function getP2pFee(valor) {
+      if (valor <= 100) return 8.8;
+      else if (valor <= 200) return 7.5;
+      else if (valor <= 333.33) return 6.8;
+      else if (valor <= 500) return 6.3;
+      else if (valor <= 1000) return 6.1;
+      else if (valor <= 3000) return 5.0;
+      else if (valor <= 6000) return 4.8;
+      else return 4.8;
+    }
+    
+    function getLucroPercent(valor) {
+      return (valor <= 1000) ? 4 : 3;
+    }
+    
+    // Função para calcular os valores e lucro
+    function calcularLucro() {
+      const compra = parseFloat(document.getElementById("compraInput").value);
+      const lucroDesejado = parseFloat(document.getElementById("lucroInput").value);
+      const resultadoDiv = document.getElementById("resultadoCalc");
+      const cotacao = getCotacao();
+      
+      if (isNaN(compra) || compra <= 0) {
+        resultadoDiv.innerHTML = "<p>Insira um valor de compra válido.</p>";
+        return;
+      }
+      if (isNaN(lucroDesejado)) {
+        resultadoDiv.innerHTML = "<p>Insira um lucro desejado válido.</p>";
+        return;
+      }
+      if (!cotacao || cotacao <= 0) {
+        resultadoDiv.innerHTML = "<p>Cotação não disponível no momento.</p>";
+        return;
+      }
+      
+      const spread = getSpread(compra);
+      const valorRecebido = compra - (compra * spread / 100);
+      const taxaP2p = getP2pFee(compra);
+      const taxaP2pR = valorRecebido * (taxaP2p / 100);
+      const lucroR = compra * (lucroDesejado / 100);
+      const valorFinal = valorRecebido - taxaP2pR + lucroR;
+      const sats = (valorFinal / cotacao) * 1e8;
+      const valorsite = (spread+ lucroDesejado);
+      const binance = ( spread+ lucroDesejado + 2 );
+
+
+      // Exibe apenas os campos desejados (removidos Valor Recebido, Taxa P2P, Valor Final e Sats)
+      resultadoDiv.innerHTML = `
+        <p><strong>Compra Real:</strong> R$ ${compra.toFixed(2)}</p>
+        <p><strong>taxa side swap:</strong> ${spread}%</p>
+        <p><strong>Lucro Desejado:</strong> ${lucroDesejado}% (R$ ${lucroR.toFixed(2)})</p>
+        <p><strong>Sugestao de taxas:</strong> ${valorsite}%</p>
+      `;
+    }
+  </script>
+</body>
+</html>

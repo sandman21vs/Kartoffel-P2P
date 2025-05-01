@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprar Bitcoin</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">
+      <img id="mainLogo" alt="Logo">
+      <span id="siteName">Minha Página</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="active">Comprar Bitcoin</a></li>
+        <li><a href="taxas.html">Taxas</a></li>
+        <li><a href="sobre.html">Sobre Mim</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <div class="container">
+    <h1>Realize sua Compra</h1>
+    <form id="purchaseForm">
+      <div class="form-group">
+        <label for="valorCompra">Valor da Compra:</label>
+        <input type="number" id="valorCompra" name="valorCompra" placeholder="Insira um valor (min: --, max: --)" required>
+        <span id="valorError"></span>
+      </div>
+      <div class="form-group">
+        <label>Tipo de Compra:</label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="tipoCompra" value="bitcoin" required checked>
+            <span id="labelBitcoinText">BITCOINs (5%)</span>
+          </label>
+          <label>
+            <input type="radio" name="tipoCompra" value="depix" required>
+            <span id="labelDepixText">DEPIX (2%)</span>
+          </label>
+          <label> + R$ 1,00</label>
+        </div>
+      </div>
+      <div id="satsInfo">Aproximadamente 0</div>
+      <div class="form-group">
+        <label>Rede de Recebimento:</label>
+        <div class="icon-radio-group">
+          <label id="redeLightningLabel">
+            <input type="radio" name="rede" value="lightning" checked>
+            <img src="imagens/lightning.png" alt="Lightning">
+            <span>Lightning</span>
+          </label>
+          <label id="redeLiquidLabel">
+            <input type="radio" name="rede" value="liquid">
+            <img src="imagens/liquid.png" alt="Liquid">
+            <span>Liquid</span>
+          </label>
+          <label id="redeOnchainLabel">
+            <input type="radio" name="rede" value="onchain">
+            <img src="imagens/onchain.png" alt="Onchain">
+            <span>Onchain</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="enderecoRecebimento">Endereço de Recebimento:</label>
+        <input type="text" id="enderecoRecebimento" name="enderecoRecebimento" placeholder="Cole o endereço de recebimento" required>
+      </div>
+      <div class="form-group cupom-group">
+        <p>Caso deseje ajudar um influenciador, insira seu cupom abaixo (opcional):</p>
+        <input type="text" name="cupom" id="cupomInput" placeholder="Seu cupom">
+      </div>
+      <button type="submit">Comprar</button>
+    </form>
+    <div id="cotacao">Cotação Depix para Lbtc: Carregando...</div>
+  </div>
+
+  <!-- Inclusão dos scripts externos (Ordem Importante) -->
+  <script src="aa/taxas_config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="js/documentacao.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/price.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/orders.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/enderecos.js"></script>
+  
+  <!-- Script de inicialização para logo e site name -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const logoEl = document.getElementById("mainLogo");
+      if (logoEl) {
+        logoEl.src = `aa/logo.png?cacheBust=${Date.now()}`;
+      }
+      const siteNameEl = document.getElementById("siteName");
+      if (siteNameEl && CONFIG && CONFIG.contact && CONFIG.contact.name) {
+        siteNameEl.textContent = CONFIG.contact.name;
+      }
+    });
+  </script>
+</body>
+</html>

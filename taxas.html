@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taxas - Minha Página</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho Compartilhado -->
+  <header>
+    <div class="logo">
+      <img id="mainLogo" src="aa/logo.png" alt="Logo">
+      <span id="siteName">Minha Página</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Comprar Bitcoin</a></li>
+        <li><a href="taxas.html" class="active">Taxas</a></li>
+        <li><a href="sobre.html">Sobre Mim</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <!-- Conteúdo Principal -->
+  <div class="container">
+    <h1>Taxas e Mínimos</h1>
+    <div id="taxasConteudo"></div>
+  </div>
+  
+  <!-- Inclusão dos scripts externos (ordem de carregamento) -->
+  <script src="aa/taxas_config.js"></script>
+  <!-- Script específico para inicializar a página de Taxas -->
+  <script src="js/taxas.js"></script>
+
+  
+  <!-- Script de inicialização para logo e nome do site -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const logoEl = document.getElementById("mainLogo");
+      if (logoEl) {
+        logoEl.src = "aa/logo.png";
+      }
+      const siteNameEl = document.getElementById("siteName");
+      if (siteNameEl && CONFIG && CONFIG.contact && CONFIG.contact.name) {
+        siteNameEl.textContent = CONFIG.contact.name;
+      }
+    });
+  </script>
+</body>
+</html>

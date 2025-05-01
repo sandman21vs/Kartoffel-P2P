@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <!-- Meta tag para responsividade -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora P2P - Área Restrita</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Gerais */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 8px;
+      position: relative;
+    }
+    fieldset {
+      border: 1px solid #444;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    legend {
+      font-weight: bold;
+      padding: 0 5px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background-color: #111;
+      color: #fff;
+      font-size: 14px;
+    }
+    button {
+      background-color: #f00;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ff3333;
+    }
+    .result-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .result-field label {
+      width: 200px;
+    }
+    .result-field input,
+    .result-field textarea {
+      flex: 1;
+    }
+    .result-field button {
+      width: 100px;
+      padding: 5px;
+      font-size: 12px;
+    }
+    /* Novo grupo de botões para a mensagem do cliente (vertical) */
+    .vertical-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    /* Botões menores */
+    .btn-small {
+      width: 80px;
+      padding: 3px;
+      font-size: 10px;
+    }
+    /* Grupo de input para entrada de dados com botão Colar */
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+    .input-group textarea {
+      flex: 1;
+    }
+    .hidden {
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #444;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      font-size: 12px;
+    }
+    #cotacao {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .action-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    #loginContainer {
+      max-width: 400px;
+      margin: 50px auto;
+      background-color: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 8px;
+    }
+    #p2pContainer {
+      display: none;
+    }
+    .remember-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .remember-row input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+    #logoutBtn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: auto;
+      padding: 8px 12px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .tabs button {
+      background-color: #111;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .tabs button:hover {
+      background-color: #222;
+    }
+    .tabs button.active {
+      background-color: #f00;
+      color: #fff;
+    }
+    .subpage {
+      display: none;
+    }
+    .subpage.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Container de Login -->
+  <div id="loginContainer" class="container">
+    <h2>Login - Área Restrita</h2>
+    <fieldset>
+      <legend>Acesso</legend>
+      <label for="loginUser">Usuário:</label>
+      <input type="text" id="loginUser" placeholder="Informe o usuário">
+      
+      <label for="loginPass">Senha:</label>
+      <input type="password" id="loginPass" placeholder="Informe a senha">
+
+      <div class="remember-row">
+        <input type="checkbox" id="lembrarCredenciais">
+        <label for="lembrarCredenciais" style="display:inline; margin-top:0; font-weight:normal;">
+          Lembrar de mim (salvar credenciais)
+        </label>
+      </div>
+      <button onclick="doLogin()">Entrar</button>
+    </fieldset>
+  </div>
+
+  <!-- Container principal P2P (oculto até login) -->
+  <div id="p2pContainer" class="container">
+    <button id="logoutBtn" onclick="doLogout()">Logout</button>
+
+    <!-- Abas -->
+    <div class="tabs">
+      <button class="active" onclick="showSubpage('principal')">Principal</button>
+      <button onclick="showSubpage('configuracoes')">Configurações</button>
+      <button onclick="showSubpage('documentacao')">Documentação</button>
+      <button onclick="showSubpage('historico')">Histórico</button>
+    </div>
+
+    <!-- SUBPÁGINA PRINCIPAL -->
+    <div id="principal" class="subpage active">
+      <h2>Página Principal</h2>
+      
+      <!-- Configurações de Taxas: Apenas a Taxa da Rede é mantida -->
+      <fieldset>
+        <legend>Configurações de Taxas</legend>
+        <label for="networkFee">Taxa da Rede (sats) (opcional)</label>
+        <input type="number" id="networkFee" placeholder="Ex.: 200">
+      </fieldset>
+
+      <!-- Entrada de Dados via mensagem com botão Colar -->
+      <fieldset>
+        <legend>Entrada de Dados</legend>
+        <p>Digite a mensagem copiada do Telegram com o seguinte formato:</p>
+        <p><code>valor: 1000 | tipo: depix | rede: LIQUID | endereco: vjk | cupom: sandmann</code></p>
+        <div class="input-group">
+          <textarea id="inputMessage" rows="3" placeholder="Ex.: valor: 1000 | tipo: depix | rede: LIQUID | endereco: vjk | cupom: sandmann"></textarea>
+          <button style="width:80px;" onclick="colarMensagem()">Colar</button>
+        </div>
+      </fieldset>
+
+      <button onclick="calcular()">Calcular</button>
+      <div id="cotacao">Cotação Depix para Lbtc: Carregando...</div>
+
+      <h3 style="margin-top:1rem;">Resultados</h3>
+      
+      <!-- Input hidden para armazenar o ID do pedido -->
+      <input type="hidden" id="pedidoId">
+
+      <div class="result-field">
+        <label>Endereço do Cliente:</label>
+        <input type="text" id="resultEnderecoCliente" readonly>
+        <button onclick="copiarCampo('resultEnderecoCliente')">Copiar</button>
+      </div>
+      <div class="result-field">
+        <label>Valor Enviado ao Cliente:</label>
+        <input type="text" id="resultValorEnviado" readonly>
+        <button onclick="copiarCampo('resultValorEnviado')">Copiar</button>
+      </div>
+      <div class="result-field">
+        <label>Endereço Itning Comissão:</label>
+        <input type="text" id="resultEnderecoItning" readonly>
+        <button onclick="copiarCampo('resultEnderecoItning')">Copiar</button>
+      </div>
+      <div class="result-field">
+        <label>Valor de Comissão:</label>
+        <input type="text" id="resultValorComissao" readonly>
+        <button onclick="copiarCampo('resultValorComissao')">Copiar</button>
+      </div>
+      <div class="result-field">
+        <label>Lucro Bruto P2P:</label>
+        <input type="text" id="resultLucroP2P" readonly>
+        <button onclick="copiarCampo('resultLucroP2P')">Copiar</button>
+      </div>
+      <div class="result-field">
+        <label>Mensagem para o Cliente:</label>
+        <textarea id="resultMensagemCliente" readonly rows="4"></textarea>
+        <!-- Botões organizados em coluna, ao lado da mensagem -->
+        <div class="vertical-btn-group">
+          <button class="btn-small" onclick="copiarCampo('resultMensagemCliente')">Copiar</button>
+          <button class="btn-small" onclick="compartilharMensagem()">Compartilhar</button>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button onclick="salvarPedido()">Salvar Pedido</button>
+      </div>
+    </div> <!-- /principal -->
+
+    <!-- SUBPÁGINA CONFIGURAÇÕES -->
+    <div id="configuracoes" class="subpage">
+      <h2>Configurações</h2>
+
+      <!-- Lista de Cupons Registrados -->
+      <fieldset>
+        <legend>Lista de Cupons Registrados</legend>
+        <p>Edite a lista de cupons. Cada linha deve conter: <code>NomeCupom, email, desconto, comissao</code></p>
+        <textarea id="listaCupons" placeholder="Sandmann, sandmann@walletofsatoshi.com, 5, 10"></textarea>
+        <button onclick="salvarListaCupons()">Salvar Lista</button>
+      </fieldset>
+      
+      <!-- Endereço Pix P2P -->
+      <fieldset>
+        <legend>Endereço Pix P2P</legend>
+        <label for="enderecoPixP2P">Endereço Pix P2P:</label>
+        <input type="text" id="enderecoPixP2P" placeholder="Insira seu endereço Pix">
+        <button onclick="salvarEnderecoPix()">Salvar Endereço Pix</button>
+      </fieldset>
+
+      <!-- Mensagem para o Cliente Personalizada -->
+      <fieldset>
+        <legend>Mensagem para o Cliente Personalizada</legend>
+        <label for="mensagemCliente">Mensagem para o Cliente:</label>
+        <textarea id="mensagemCliente" rows="4"
+          placeholder="Deixe vazio para usar a mensagem padrão. Você pode usar tokens de substituição."></textarea>
+        <button onclick="salvarMensagemCliente()">Salvar Mensagem</button>
+      </fieldset>
+    </div> <!-- /configuracoes -->
+
+    <!-- SUBPÁGINA DOCUMENTAÇÃO -->
+    <div id="documentacao" class="subpage">
+      <h2>Documentação</h2>
+      <!-- Container para inserir, via documentacao.js, as explicações + informações -->
+      <div id="docsContent"></div>
+    </div>
+
+    <!-- SUBPÁGINA HISTÓRICO -->
+    <div id="historico" class="subpage">
+      <h2>Histórico de Pedidos</h2>
+      <div class="action-buttons">
+        <button onclick="downloadOrders()">Download Planilha</button>
+        <button onclick="deleteOrders()">Deletar Planilha</button>
+      </div>
+      <div id="ordersTableContainer">
+        <table id="ordersTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Valor Comprado</th>
+              <th>Rede</th>
+              <th>Endereço Cliente</th>
+              <th>Moeda</th>
+              <th>Valor Enviado</th>
+              <th>Taxa Rede</th>
+              <th>Endereço Itning</th>
+              <th>Cupom</th>
+              <th>Valor Comissão</th>
+              <th>Lucro P2P</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Gerado dinamicamente por JS -->
+          </tbody>
+        </table>
+      </div>
+    </div> <!-- /historico -->
+  </div> <!-- /p2pContainer -->
+
+        <!-- Importa o arquivo de configurações (CONFIG) -->
+        <script src="aa/taxas_config.js"></script>
+        <!-- Importa a biblioteca CryptoJS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+        <!-- Importa o script de documentação (documentacao.js), que contém o texto do +informações -->
+        <script src="js/documentacao.js"></script>
+
+        <!-- Importa os módulos separados -->
+        <script src="js/config.js"></script>
+        <script src="js/price.js"></script>
+        <script src="js/utils.js"></script>
+        <script src="js/crypto.js"></script>
+        <script src="js/orders.js"></script>
+
+
+
+  <script>
+    /*
+     * LOGIN E SALVAMENTO DE CONFIG
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('savedUser');
+      const savedPass = localStorage.getItem('savedPass');
+      if (savedUser && savedPass) {
+        document.getElementById('loginUser').value = savedUser;
+        document.getElementById('loginPass').value = savedPass;
+        document.getElementById('lembrarCredenciais').checked = true;
+        // Login automático
+        doLogin();
+      }
+    });
+
+    function doLogin() {
+      const userInput = document.getElementById('loginUser').value.trim();
+      const passInput = document.getElementById('loginPass').value.trim();
+      const lembrar = document.getElementById('lembrarCredenciais').checked;
+
+      if (userInput === CONFIG.auth.username && passInput === CONFIG.auth.password) {
+        window.loggedIn = true;
+        if (lembrar) {
+          localStorage.setItem('savedUser', userInput);
+          localStorage.setItem('savedPass', passInput);
+        } else {
+          localStorage.removeItem('savedUser');
+          localStorage.removeItem('savedPass');
+        }
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('p2pContainer').style.display = 'block';
+
+        // Chamadas principais
+        atualizarCotacao();      // para atualizar a cotação
+        updateOrdersTable();     // para carregar os pedidos salvos (cripto)
+        loadLocalUserConfig();   // <-- CARREGA os campos (lista de cupons, pix, mensagem) do localStorage
+      } else {
+        alert('Usuário ou senha inválidos.');
+      }
+    }
+
+    function doLogout() {
+      window.loggedIn = false;
+      localStorage.removeItem('savedUser');
+      localStorage.removeItem('savedPass');
+      document.getElementById('loginContainer').style.display = 'block';
+      document.getElementById('p2pContainer').style.display = 'none';
+    }
+
+    /*
+     * Função que gerencia as abas (subpáginas)
+     */
+    function showSubpage(subpageId) {
+      // Desativa botões
+      const tabButtons = document.querySelectorAll('.tabs button');
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+
+      // Desativa subpáginas
+      const subpages = document.querySelectorAll('.subpage');
+      subpages.forEach(sp => sp.classList.remove('active'));
+
+      // Ativa a subpágina desejada
+      document.getElementById(subpageId).classList.add('active');
+
+      // Destaca o botão correspondente
+      const btn = Array.from(tabButtons).find(b => b.innerText.toLowerCase() === subpageId.toLowerCase());
+      if (btn) {
+        btn.classList.add('active');
+      }
+
+      // Se for a aba de Documentação, carrega a documentação (documentacao.js)
+      if (subpageId === 'documentacao') {
+        mostrarDocumentacao();
+      }
+      // Se for histórico, atualiza tabela
+      if (subpageId === 'historico') {
+        updateOrdersTable();
+      }
+    }
+
+    /*
+     * Colar mensagem (função de exemplo)
+     */
+    function colarMensagem() {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText()
+          .then(text => {
+            document.getElementById('inputMessage').value = text;
+          })
+          .catch(error => {
+            alert('Erro ao colar da área de transferência.');
+            console.error('Erro ao ler a área de transferência:', error);
+          });
+      } else {
+        alert('Função de colar não suportada neste dispositivo.');
+      }
+    }
+  </script>
+</body>
+</html>
